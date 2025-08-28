@@ -1,0 +1,59 @@
+apiVersion: guided-engineering/v1
+id: milestone1.endpoint.provision
+title: Milestone 1 – Provisioning Endpoint in Backstage Router
+persona: SoftwareDeveloper
+category: implementation
+difficulty: hard
+context: |
+  Implement an endpoint in Backstage backend (plugin router.services)
+  to allow application provisioning via GitHub Actions.
+  The endpoint must persist provisioning metadata into the database,
+  track execution status, and return the GitHub run ID.
+
+  Technologies: Backstage (backend plugin, Typescript), Knex (DB), GitHub App API.
+
+steps:
+  - id: define-route
+    title: Create route POST /applications/:id/provision
+    actions:
+      - Open the router.services inside the Backstage backend plugin
+      - Register new route with router.use(v1/services)
+      - Ensure the route extracts the application ID from the URL
+      - Add validation to check if application exists and is approved
+
+  - id: transform-data
+    title: Transform persistent data into action contract
+    actions:
+      - Query the application data from DB using Knex
+      - Map relevant fields into the payload expected by the GitHub Action
+      - Prepare the request body for GitHub API call
+
+  - id: invoke-github
+    title: Invoke GitHub Action via API
+    actions:
+      - Authenticate using GitHub App installation ID
+      - Call the GitHub API to trigger the provision workflow
+      - Wait a few seconds, then fetch the run ID from GitHub API
+
+  - id: persist-provision
+    title: Persist provisioning metadata
+    actions:
+      - Update applications table/collection using Knex
+      - Store initial status as "Provisioning"
+      - Persist runID and metadata for tracking
+
+  - id: return-response
+    title: Return API response
+    actions:
+      - Send response with runID and initial status to Backstage caller
+      - Handle errors and provide meaningful error messages
+
+output:
+  - file: architecture/milestone1.provisioning-endpoint.md
+    language: markdown
+    rules:
+      - Document API design, DB schema changes, and integration flow
+      - Include example request/response payloads
+      - Capture assumptions and limitations for future iterations
+
+version: 1
