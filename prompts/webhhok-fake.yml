@@ -1,0 +1,46 @@
+apiVersion: guided-engineering/v1
+id: milestone3.auto-update.runner
+title: Milestone 3 – Automatic Status Update via Runner
+persona: DevOpsOrchestrator
+category: implementation
+difficulty: hard
+context: |
+  Implement an automatic update mechanism where the GitHub Actions runner
+  notifies the application API with the provisioning status upon workflow completion.
+  This avoids reliance on external webhooks and ensures execution within
+  the secure network of the runner.
+
+  Workflow: terraformer-service-draft.yml
+  Versions: v1, v2, v3 (extensible for future versions)
+  Technologies: GitHub Actions, Node/TypeScript script (or curl), Backstage plugin API, HCL
+
+steps:
+  - id: workflow-structure
+    title: Define workflow structure with branching for versions
+    actions:
+      - Create terraformer-service-draft.yml in .github/workflows/
+      - Define jobs with branching logic for v1, v2, v3 execution paths
+      - Pass parameters (applicationId, version) into jobs from workflow dispatch or caller
+
+  - id: runner-step-notification
+    title: Implement generic runner step for notifying API
+    actions:
+      - At the end of each job, add a step to notify API
+      - Implement notification using curl or Node/TS script
+      - Endpoint: PATCH /applications/:id
+      - Payload includes status ("Provisionada" or "Erro") and version ("v1", "v2", "v3")
+      - Ensure retries and error handling for failed notifications
+
+  - id: api-update-endpoint
+    title: Extend API to support automatic updates
+    actions:
+      - Implement PATCH /applications/:id in backend plugin
+      - Validate allowed status transitions
+      - Persist new status and version in DB
+      - Register audit logs including source (runner, job ID, version)
+
+  - id: parameterization
+    title: Generalize workflow to handle future versions
+    actions:
+      - Use workflow inputs or environment variables for version control
+      - Ensure
